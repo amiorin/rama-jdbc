@@ -8,6 +8,11 @@ import java.util.concurrent.*;
 
 public class JdbcExternalDepot implements ExternalDepot {
   TaskGlobalContext _context;
+  long start;
+
+  public JdbcExternalDepot() {
+    this.start = System.currentTimeMillis() / 1000;
+  }
 
   @Override
   public void prepareForTask(int taskId, TaskGlobalContext context) {
@@ -16,32 +21,35 @@ public class JdbcExternalDepot implements ExternalDepot {
 
   @Override
   public void close() throws IOException {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'close'");
   }
 
   @Override
   public CompletableFuture<Long> endOffset(int partitionIndex) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'endOffset'");
+    return CompletableFuture.completedFuture(System.currentTimeMillis() / 1000);
   }
 
   @Override
   public CompletableFuture<List> fetchFrom(int partitionIndex, long startOffset) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'fetchFrom'");
+    long end = System.currentTimeMillis() / 1000;
+    List<Long> res = new ArrayList<>();
+    for (long i = startOffset; i < end; i++) {
+      res.add(i);
+    }
+    return CompletableFuture.completedFuture(res);
   }
 
   @Override
   public CompletableFuture<List> fetchFrom(int partitionIndex, long startOffset, long endOffset) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'fetchFrom'");
+    List<Long> res = new ArrayList<>();
+    for (long i = startOffset; i < endOffset; i++) {
+      res.add(i);
+    }
+    return CompletableFuture.completedFuture(res);
   }
 
   @Override
   public CompletableFuture<Integer> getNumPartitions() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getNumPartitions'");
+    return CompletableFuture.completedFuture(1);
   }
 
   @Override
@@ -52,7 +60,6 @@ public class JdbcExternalDepot implements ExternalDepot {
 
   @Override
   public CompletableFuture<Long> startOffset(int partitionIndex) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'startOffset'");
+    return CompletableFuture.completedFuture(start);
   }
 }
