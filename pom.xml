@@ -14,17 +14,17 @@
     </properties>
 
     <repositories>
-      <repository>
-        <id>nexus-releases</id>
-        <url>https://nexus.redplanetlabs.com/repository/maven-public-releases</url>
-      </repository>
+        <repository>
+            <id>nexus-releases</id>
+            <url>https://nexus.redplanetlabs.com/repository/maven-public-releases</url>
+        </repository>
     </repositories>
 
     <distributionManagement>
-      <repository>
-        <id>nexus-releases</id>
-        <url>https://nexus.redplanetlabs.com/repository/maven-public-releases</url>
-      </repository>
+        <repository>
+            <id>nexus-releases</id>
+            <url>https://nexus.redplanetlabs.com/repository/maven-public-releases</url>
+        </repository>
     </distributionManagement>
 
     <dependencies>
@@ -44,6 +44,25 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.4</version>
+        </dependency>
+
+        <!-- SLF4J API -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.16</version>
+        </dependency>
+
+        <!-- Logback Classic (SLF4J implementation) -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.5.12</version>
         </dependency>
     </dependencies>
 
@@ -70,6 +89,28 @@
                 <artifactId>maven-help-plugin</artifactId>
                 <version>3.2.0</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.4.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.of.rama.jdbc.PostgresToRamaPoller</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
+
 </project>

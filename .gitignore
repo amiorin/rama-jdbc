@@ -34,3 +34,5 @@ kafka_2.13-*/
 /.factorypath
 /.project
 /.settings/
+/postgres/
+/nohup.out
