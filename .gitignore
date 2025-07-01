@@ -36,3 +36,5 @@ kafka_2.13-*/
 /.settings/
 /postgres/
 /nohup.out
+/last_change_id.txt
+/.envrc.private

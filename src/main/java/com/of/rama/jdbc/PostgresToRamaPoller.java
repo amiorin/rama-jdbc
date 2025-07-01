@@ -5,6 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +15,8 @@ public class PostgresToRamaPoller {
     private static final Logger logger = LoggerFactory.getLogger(PostgresToRamaPoller.class);
 
     // TODO: load from environment
-    private static final String DB_URL = "jdbc:postgresql://localhost:4444/rama_jdbc_db";
+    private static final String DB_PORT = System.getenv("JAVA_HOME");
+    private static final String DB_URL = "jdbc:postgresql://localhost:" + DB_PORT + "/rama_jdbc_db";
     private static final String DB_USER = "rama_jdbc_user";
     private static final String DB_PASSWORD = "";
 
