@@ -9,7 +9,7 @@ CREATE TABLE users_cdc (
     operation VARCHAR(10),
     old_data JSONB,
     new_data JSONB,
-    change_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    change_timestamp TIMESTAMPZ DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE OR REPLACE FUNCTION capture_changes()
