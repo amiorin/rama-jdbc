@@ -14,8 +14,7 @@ public class JdbcExternalDepotTest {
 
       StreamTopology s = topologies.stream("s");
       s.source("*jdbc", StreamSourceOptions.startFromBeginning()).out("*long")
-       .each(Ops.PRINTLN, "*long")
-       .execute();
+       .each(Ops.PRINTLN, "*long");
       System.out.println("Done!");
     }
   }
