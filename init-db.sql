@@ -3,16 +3,6 @@ CREATE TABLE users (
     name VARCHAR(10),
     age INT
 );
-INSERT INTO users (name, age)
-VALUES
- ('id', 8),
- ('zh', 6),
- ('ko', 5),
- ('ms', 5),
- ('fa', 3),
- ('ca', 2),
- ('pl', 2),
- ('my', 1);
 
 CREATE TABLE users_cdc (
     change_id SERIAL PRIMARY KEY,
@@ -42,3 +32,14 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER users_audit_trigger
 AFTER INSERT OR UPDATE OR DELETE ON users
 FOR EACH ROW EXECUTE FUNCTION capture_changes();
+
+INSERT INTO users (name, age)
+VALUES
+ ('id', 8),
+ ('zh', 6),
+ ('ko', 5),
+ ('ms', 5),
+ ('fa', 3),
+ ('ca', 2),
+ ('pl', 2),
+ ('my', 1);
