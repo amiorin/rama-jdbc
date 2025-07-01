@@ -34,3 +34,7 @@ kafka_2.13-*/
 /.factorypath
 /.project
 /.settings/
+/integration-test/.classpath
+/integration-test/.factorypath
+/integration-test/.project
+/integration-test/.settings/
