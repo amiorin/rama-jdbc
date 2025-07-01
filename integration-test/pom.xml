@@ -58,6 +58,17 @@
                       <addResourcesToClasspath>true</addResourcesToClasspath>
                     </configuration>
                 </execution>
+                <execution>
+                  <id>RunJdbc</id>
+                    <goals>
+                      <goal>java</goal>
+                    </goals>
+                    <configuration>
+                      <mainClass>com.rpl.integration.JdbcExternalDepotTest</mainClass>
+                      <classpathScope>test</classpathScope>
+                      <addResourcesToClasspath>true</addResourcesToClasspath>
+                    </configuration>
+                </execution>
               </executions>
             </plugin>
             <plugin>
