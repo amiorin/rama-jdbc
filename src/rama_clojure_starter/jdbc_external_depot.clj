@@ -1,43 +1,41 @@
 (ns rama-clojure-starter.jdbc-external-depot
   (:require
-   [com.rpl.rama.path :refer :all]
+   [clojure.tools.logging :as log]
    [com.rpl.rama :refer :all]
-   [clojure.string :as str]
-   [com.rpl.rama.test :as rtest]
-   [com.rpl.rama.aggs :as aggs]
-   [com.rpl.rama.ops :as ops])
+   [com.rpl.rama.path :refer :all]
+   [com.rpl.rama.test :as rtest])
   (:import
    [com.rpl.rama.integration ExternalDepot TaskGlobalObject]
-   [java.util.concurrent CompletableFuture]
-   [java.util List ArrayList]))
+   [java.util ArrayList List]
+   [java.util.concurrent CompletableFuture]))
 
 (defn ->jdbc-depot
   [start]
   (reify
     TaskGlobalObject
     (prepareForTask [_this _task-id _context]
-      (println (format "task-id: %s" _task-id)))
+      (log/info (format "task-id: %s" _task-id)))
     ExternalDepot
     (close [_this])
     (endOffset [_this _partition-index]
-      (println "endOffset: " _partition-index)
+      (log/info "endOffset: " _partition-index)
       (CompletableFuture/completedFuture (quot (System/currentTimeMillis) 1000)))
     (fetchFrom [_this _partition-index start-offset]
-      (println (format "fetchFrom: %s, start-offset: %s" _partition-index start-offset))
+      (log/info (format "fetchFrom: %s, start-offset: %s" _partition-index start-offset))
       (let [end (quot (System/currentTimeMillis) 1000)
             res (ArrayList. ^List (range start-offset end))]
         (CompletableFuture/completedFuture res)))
     (fetchFrom [_this _partition-index start-offset end-offset]
-      (println (format "start-offset: %s, end-offset %s" start-offset end-offset))
+      (log/info (format "start-offset: %s, end-offset %s" start-offset end-offset))
       (let [res (ArrayList. ^List (range start-offset end-offset))]
         (CompletableFuture/completedFuture res)))
     (getNumPartitions [_this]
-      (println "getNumPartitions")
-      (CompletableFuture/completedFuture 1))
+      (log/info "getNumPartitions")
+      (CompletableFuture/completedFuture 8))
     (offsetAfterTimestampMillis [_this _partition-index _millis]
       (throw (UnsupportedOperationException. "Unimplemented method 'offsetAfterTimestampMillis'")))
     (startOffset [_this _parittion-index]
-      (println "startOffset")
+      (log/info "startOffset")
       (CompletableFuture/completedFuture start))))
 
 (defmodule WordCountModule [setup topologies]
@@ -52,9 +50,9 @@
 
 (def ipc (rtest/create-ipc))
 
-(rtest/launch-module! ipc WordCountModule {:tasks 16 :threads 16})
+(rtest/launch-module! ipc WordCountModule {:tasks 4 :threads 2})
 
-(rtest/destroy-module! ipc "rama-clojure-starter.jdbc-external-depot/WordCountModule")
+#_(rtest/destroy-module! ipc "rama-clojure-starter.jdbc-external-depot/WordCountModule")
 
 (comment
   (def ipc (rtest/create-ipc))

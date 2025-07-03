@@ -2,16 +2,20 @@
 <Configuration status="WARN" monitorInterval="30">
   <Appenders>
     <Console name="ConsoleAppender" target="SYSTEM_OUT">
-      <PatternLayout pattern="%msg%n"></PatternLayout>
+      <PatternLayout pattern="[%t] %msg%n"></PatternLayout>
     </Console>
-    <Syslog name="SyslogAppender" host="localhost" port="5140" protocol="UDP" facility="LOCAL0" connectTimeoutMillis="0">
-      <PatternLayout pattern="%msg%n"></PatternLayout>
+    <Syslog name="SyslogAppender" host="10.0.0.77" port="5140" protocol="UDP" facility="LOCAL0" connectTimeoutMillis="0">
+      <PatternLayout pattern="[%t] %msg%n"></PatternLayout>
     </Syslog>
   </Appenders>
   <Loggers>
-    <Root level="info">
+    <Root level="OFF">
       <AppenderRef ref="ConsoleAppender"></AppenderRef>
       <AppenderRef ref="SyslogAppender"></AppenderRef>
     </Root>
+    <Logger name="rama-clojure-starter" level="INFO" additivity="false">
+      <AppenderRef ref="ConsoleAppender"></AppenderRef>
+      <AppenderRef ref="SyslogAppender"></AppenderRef>
+    </Logger>
   </Loggers>
 </Configuration>
