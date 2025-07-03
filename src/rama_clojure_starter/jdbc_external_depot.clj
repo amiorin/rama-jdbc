@@ -15,24 +15,29 @@
   [start]
   (reify
     TaskGlobalObject
-    (prepareForTask [_this _task-id _context])
+    (prepareForTask [_this _task-id _context]
+      (println (format "task-id: %s" _task-id)))
     ExternalDepot
     (close [_this])
     (endOffset [_this _partition-index]
-      (println "endOffset")
+      (println "endOffset: " _partition-index)
       (CompletableFuture/completedFuture (quot (System/currentTimeMillis) 1000)))
     (fetchFrom [_this _partition-index start-offset]
+      (println (format "fetchFrom: %s, start-offset: %s" _partition-index start-offset))
       (let [end (quot (System/currentTimeMillis) 1000)
             res (ArrayList. ^List (range start-offset end))]
         (CompletableFuture/completedFuture res)))
     (fetchFrom [_this _partition-index start-offset end-offset]
+      (println (format "start-offset: %s, end-offset %s" start-offset end-offset))
       (let [res (ArrayList. ^List (range start-offset end-offset))]
         (CompletableFuture/completedFuture res)))
     (getNumPartitions [_this]
+      (println "getNumPartitions")
       (CompletableFuture/completedFuture 1))
     (offsetAfterTimestampMillis [_this _partition-index _millis]
       (throw (UnsupportedOperationException. "Unimplemented method 'offsetAfterTimestampMillis'")))
     (startOffset [_this _parittion-index]
+      (println "startOffset")
       (CompletableFuture/completedFuture start))))
 
 (defmodule WordCountModule [setup topologies]
@@ -40,7 +45,16 @@
   (let [s (stream-topology topologies "print-long")]
     (<<sources s
                (source> *jdbc-depot :> *long)
+               (anchor> <default-root>)
+               (println *long)
+               (hook> <default-root>)
                (println *long))))
+
+(def ipc (rtest/create-ipc))
+
+(rtest/launch-module! ipc WordCountModule {:tasks 16 :threads 16})
+
+(rtest/destroy-module! ipc "rama-clojure-starter.jdbc-external-depot/WordCountModule")
 
 (comment
   (def ipc (rtest/create-ipc))
