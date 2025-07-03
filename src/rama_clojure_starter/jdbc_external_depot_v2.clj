@@ -37,4 +37,4 @@
       (println "startOffset")
       (CompletableFuture/completedFuture start))))
 
-(logging/info "foo")
+(logging/warn "foo")

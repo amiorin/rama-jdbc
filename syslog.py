@@ -3,7 +3,7 @@
 import socket
 
 HOST = "0.0.0.0"  # Listen on all available interfaces
-PORT = 5514  # Custom UDP port
+PORT = 5140  # Custom UDP port
 
 
 def start_syslog_receiver(host, port):

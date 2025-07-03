@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN">
+<Configuration status="WARN" monitorInterval="30">
   <Appenders>
     <Console name="ConsoleAppender" target="SYSTEM_OUT">
-      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"></PatternLayout>
+      <PatternLayout pattern="%msg%n"></PatternLayout>
     </Console>
-    <Syslog name="SyslogAppender" host="my.syslog.server.com" port="5514" protocol="UDP" format="RFC5424" facility="LOCAL0" appName="my-clojure-app"></Syslog>
+    <Syslog name="SyslogAppender" host="localhost" port="5140" protocol="UDP" facility="LOCAL0" connectTimeoutMillis="0">
+      <PatternLayout pattern="%msg%n"></PatternLayout>
+    </Syslog>
   </Appenders>
   <Loggers>
     <Root level="info">
       <AppenderRef ref="ConsoleAppender"></AppenderRef>
       <AppenderRef ref="SyslogAppender"></AppenderRef>
     </Root>
-    <Logger name="my-clojure-app.core" level="debug" additivity="false">
-      <AppenderRef ref="ConsoleAppender"></AppenderRef>
-      <AppenderRef ref="SyslogAppender"></AppenderRef>
-    </Logger>
   </Loggers>
 </Configuration>
