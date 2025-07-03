@@ -1,5 +1,10 @@
 {:deps {com.h2database/h2 {:mvn/version "2.3.232"}
         seancorfield/next.jdbc {:mvn/version "1.2.659"}
         com.rpl/rama-helpers {:mvn/version "0.10.0"}
-        com.rpl/rama {:mvn/version "1.1.0"}}
+        com.rpl/rama {:mvn/version "1.1.0"}
+        org.slf4j/slf4j-api {:mvn/version "1.8.0-beta4"}
+        org.apache.logging.log4j/log4j-api {:mvn/version "2.16.0"}
+        org.apache.logging.log4j/log4j-core {:mvn/version "2.16.0"}
+        org.apache.logging.log4j/log4j-slf4j18-impl {:mvn/version "2.16.0"}
+        org.clojure/tools.logging {:mvn/version "1.3.0"}}
  :mvn/repos {"releases" {:url "https://nexus.redplanetlabs.com/repository/maven-public-releases"}}}
