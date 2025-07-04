@@ -52,7 +52,7 @@
 
 (rtest/launch-module! ipc WordCountModule {:tasks 4 :threads 2})
 
-#_(rtest/destroy-module! ipc "rama-clojure-starter.jdbc-external-depot/WordCountModule")
+(rtest/destroy-module! ipc "rama-clojure-starter.jdbc-external-depot/WordCountModule")
 
 (comment
   (def ipc (rtest/create-ipc))
