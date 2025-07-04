@@ -1,31 +1,27 @@
-(ns rama-clojure-starter.jdbc-external-depot-v2
+(ns rama-clojure-starter.foo
   (:require
-   [com.rpl.rama :refer :all]
-   [com.rpl.rama.path :refer :all]
-   [com.rpl.rama.test :as rtest]
    [next.jdbc :as jdbc]
    [next.jdbc.connection :as connection])
   (:import
    [com.rpl.rama.integration ExternalDepot TaskGlobalObject]
-   [com.zaxxer.hikari HikariDataSource]
    [java.util ArrayList List]
    [java.util.concurrent CompletableFuture]
-   [java.util.function Supplier]))
-
-(def datasource-options
-  {:jdbc-url "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1" ; DB_CLOSE_DELAY=-1 keeps it open until JVM exits
-   :username "sa"
-   :password ""
-   :maximumPoolSize 10
-   :minimumIdle 1
-   :idleTimeout 600000
-   :connectionTimeout 30000})
+   [java.util.function Supplier]
+   [com.zaxxer.hikari HikariDataSource]))
 
 (do
+  (def datasource-options
+    {:jdbcUrl "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1" ; DB_CLOSE_DELAY=-1 keeps it open until JVM exits
+     :username "sa"
+     :password ""
+     :maximumPoolSize 10
+     :minimumIdle 1
+     :idleTimeout 600000
+     :connectionTimeout 30000})
   (deftype jdbc-depot [datasource-options ^:volatile-mutable ds]
     TaskGlobalObject
     (prepareForTask [_this task-id _context]
-      (when (and (task-id 0)
+      (when (and (= task-id 0)
                  (nil? ds))
         (set! ds (delay (connection/->pool HikariDataSource datasource-options))))
       (println (format "task-id: %s" task-id)))
@@ -56,20 +52,6 @@
     (startOffset [_this _parittion-index]
       (println "startOffset")
       (CompletableFuture/completedFuture (quot (System/currentTimeMillis) 1000))))
-  (->jdbc-depot datasource-options nil))
-
-(defmodule WordCountModule [setup topologies]
-  (declare-object setup *jdbc-depot (->jdbc-depot datasource-options nil))
-  (let [s (stream-topology topologies "print-long")]
-    (<<sources s
-               (source> *jdbc-depot :> *long)
-               (anchor> <default-root>)
-               (println *long)
-               (hook> <default-root>)
-               (println *long))))
-
-(def ipc (rtest/create-ipc))
-
-(rtest/launch-module! ipc WordCountModule {:tasks 4 :threads 2})
-
-"foo"
+  (let [depot (->jdbc-depot datasource-options nil)]
+    (.prepareForTask depot 0 nil)
+    (.close depot)))

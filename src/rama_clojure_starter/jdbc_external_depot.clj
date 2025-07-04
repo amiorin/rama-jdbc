@@ -31,7 +31,7 @@
         (CompletableFuture/completedFuture res)))
     (getNumPartitions [_this]
       (log/info "getNumPartitions")
-      (CompletableFuture/completedFuture 8))
+      (CompletableFuture/completedFuture 1))
     (offsetAfterTimestampMillis [_this _partition-index _millis]
       (throw (UnsupportedOperationException. "Unimplemented method 'offsetAfterTimestampMillis'")))
     (startOffset [_this _parittion-index]
