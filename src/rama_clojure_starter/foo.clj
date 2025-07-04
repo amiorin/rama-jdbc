@@ -50,9 +50,11 @@
     (CompletableFuture/supplyAsync
      (reify Supplier
        (get [_]
-         (let [xs (for [row (jdbc/execute! @ds ["SELECT * from system_range(?, 10)" start-offset])]
-                    (:SYSTEM_RANGE/X row))]
-           (ArrayList. ^List xs))))))
+         (let [xs (for [row (jdbc/execute! @ds ["SELECT * from system_range(?, ?)" start-offset (+ start-offset 10)])]
+                    (:SYSTEM_RANGE/X row))
+               res (ArrayList. ^List xs)]
+           (println res)
+           res)))))
   (fetchFrom [_this _partition-index start-offset end-offset]
     (log/info (format "start-offset: %s, end-offset %s" start-offset end-offset))
     (CompletableFuture/supplyAsync
@@ -91,8 +93,9 @@
                (hook> <default-root>)
                (println *long))))
 
-(def ipc (rtest/create-ipc))
+(comment
+  (def ipc (rtest/create-ipc))
 
-(rtest/launch-module! ipc WordCountModule {:tasks 4 :threads 2})
+  (rtest/launch-module! ipc WordCountModule {:tasks 4 :threads 2})
 
-#_(rtest/destroy-module! ipc "rama-clojure-starter.foo/WordCountModule")
+  (rtest/destroy-module! ipc "rama-clojure-starter.foo/WordCountModule"))
