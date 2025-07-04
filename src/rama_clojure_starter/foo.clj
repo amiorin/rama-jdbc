@@ -23,35 +23,44 @@
     (prepareForTask [_this task-id _context]
       (when (and (= task-id 0)
                  (nil? ds))
+        (println "Opening")
         (set! ds (delay (connection/->pool HikariDataSource datasource-options))))
       (println (format "task-id: %s" task-id)))
     ExternalDepot
     (close [_this]
       (when ds
+        (println "Closing")
         (.close @ds)))
     (endOffset [_this _partition-index]
       (CompletableFuture/supplyAsync
        (reify Supplier
          (get [_]
-           (quot (System/currentTimeMillis) 1000)))))
+           (-> (jdbc/execute! @ds ["SELECT 1000 as count"])
+               first
+               :COUNT)))))
     (fetchFrom [_this _partition-index start-offset]
-      (jdbc/execute! @ds ["SELECT 1"])
-      (println (format "fetchFrom: %s, start-offset: %s" _partition-index start-offset))
-      (let [end (quot (System/currentTimeMillis) 1000)
-            res (ArrayList. ^List (range start-offset end))]
-        (CompletableFuture/completedFuture res)))
+      (CompletableFuture/supplyAsync
+       (reify Supplier
+         (get [_]
+           (let [xs (for [row (jdbc/execute! @ds ["SELECT * from system_range(?, 10)" start-offset])]
+                      (:SYSTEM_RANGE/X row))]
+             (ArrayList. ^List xs))))))
     (fetchFrom [_this _partition-index start-offset end-offset]
-      (println (format "start-offset: %s, end-offset %s" start-offset end-offset))
-      (let [res (ArrayList. ^List (range start-offset end-offset))]
-        (CompletableFuture/completedFuture res)))
+      (CompletableFuture/supplyAsync
+       (reify Supplier
+         (get [_]
+           (let [xs (for [row (jdbc/execute! @ds ["SELECT * from system_range(?, ?)" start-offset end-offset])]
+                      (:SYSTEM_RANGE/X row))]
+             (ArrayList. ^List xs))))))
     (getNumPartitions [_this]
-      (println "getNumPartitions")
       (CompletableFuture/completedFuture 1))
     (offsetAfterTimestampMillis [_this _partition-index _millis]
       (throw (UnsupportedOperationException. "Unimplemented method 'offsetAfterTimestampMillis'")))
     (startOffset [_this _parittion-index]
-      (println "startOffset")
-      (CompletableFuture/completedFuture (quot (System/currentTimeMillis) 1000))))
+      (CompletableFuture/completedFuture 0)))
   (let [depot (->jdbc-depot datasource-options nil)]
     (.prepareForTask depot 0 nil)
+    (.prepareForTask depot 1 nil)
+    (println (.get (.endOffset depot 0)))
+    (println (.get (.fetchFrom depot 0 0)))
     (.close depot)))
