@@ -5,6 +5,18 @@ pg_port :=`shuf -i 49152-65535 -n 1`
 help:
     @just -f {{ justfile() }} --list --unsorted
 
+# use project tools instead of global ones
+devbox-setup:
+    devbox install
+
+# install python for syslog.py
+pixi-setup:
+    pixi install
+
+# install rama cli
+rama-setup:
+    echo TBD
+
 setup-env-vars:
     echo "### Added by just: start ###" >> .envrc.private
     echo "export PGPORT={{pg_port}}" >> .envrc.private
@@ -33,10 +45,7 @@ sleep-5:
 setup-dev: direnv-allow setup-env-vars init-postgres run-postgres-in-background sleep-5 setup-postgres-db stop-processes stop-overmind sleep-5
 
 run-processes:
-    direnv exec . nohup overmind start &
-
-run-jdbc-poller:
-    mvn exec:java -Dexec.mainClass="com.of.rama.jdbc.PostgresToRamaPoller"
+    direnv exec . overmind start -D
 
 remove-postgres:
     rm -rf postgres
