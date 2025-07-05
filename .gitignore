@@ -38,3 +38,6 @@ kafka_2.13-*/
 /integration-test/.factorypath
 /integration-test/.project
 /integration-test/.settings/
+/.envrc.private
+/.nrepl-port
+/postgres/
