@@ -44,7 +44,7 @@
          (-> (jdbc/execute! @ds ["SELECT 1000 as count"])
              first
              :COUNT)
-         (quot (System/currentTimeMillis) 1000)))))
+         0))))
   (fetchFrom [_this _partition-index start-offset]
     (log/info (format "fetchFrom: %s, start-offset: %s" _partition-index start-offset))
     (CompletableFuture/supplyAsync
@@ -53,7 +53,7 @@
          (let [xs (for [row (jdbc/execute! @ds ["SELECT * from system_range(?, ?)" start-offset (+ start-offset 10)])]
                     (:SYSTEM_RANGE/X row))
                res (ArrayList. ^List xs)]
-           (println res)
+           (Thread/sleep 1000)
            res)))))
   (fetchFrom [_this _partition-index start-offset end-offset]
     (log/info (format "start-offset: %s, end-offset %s" start-offset end-offset))
@@ -99,3 +99,7 @@
   (rtest/launch-module! ipc WordCountModule {:tasks 4 :threads 2})
 
   (rtest/destroy-module! ipc "rama-clojure-starter.foo/WordCountModule"))
+
+(def ipc (rtest/create-ipc))
+
+(rtest/launch-module! ipc WordCountModule {:tasks 4 :threads 2})

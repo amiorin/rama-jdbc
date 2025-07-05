@@ -14,3 +14,9 @@ pom.xml.asc
 /.clj-kondo/
 /.lsp/
 /.cpcache/
+
+# pixi environments
+.pixi
+*.egg-info
+/.envrc.private
+/postgres/
