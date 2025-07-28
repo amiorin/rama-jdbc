@@ -1,0 +1,20 @@
+dev:
+  dialect: postgres
+  datasource: postgres://{{postgres-user}}@localhost:{{postgres-port}}/{{postgres-dbname}}?sslmode=disable
+  dir: migrations
+  table: migrations
+  schema: "{{postgres-schema}}"
+
+test:
+  dialect: postgres
+  datasource: postgres://{{postgres-user}}@localhost:{{postgres-port-test}}/{{postgres-dbname}}?sslmode=disable
+  dir: migrations
+  table: migrations
+  schema: "{{postgres-schema}}"
+
+staging:
+  dialect: postgres
+  datasource: postgres://{{postgres-user-staging}}:{{postgres-password-staging}}@{{postgres-host-staging}}:{{postgres-port-staging}}/{{postgres-dbname-staging}}?sslmode=disable
+  dir: migrations
+  table: migrations
+  schema: "{{postgres-schema}}"

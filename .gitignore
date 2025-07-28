@@ -1,0 +1,15 @@
+/.big-config/.clj-kondo/
+/.big-config/.cpcache/
+/.big-config/.lsp/
+/.big-config/.nrepl-port
+/.clj-kondo/
+/.cpcache/
+/.envrc
+/.lsp/
+/.nrepl-port
+/bin/init.sql
+/bin/postgres.sh
+/bin/shell.nix
+/justfile
+/migrations/dbconfig.yml
+/shell.nix

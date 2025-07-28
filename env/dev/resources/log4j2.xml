@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+  <Appenders>
+    <Console name="ConsoleAppender" target="SYSTEM_OUT">
+      <PatternLayout pattern="[%t] %msg%n"></PatternLayout>
+    </Console>
+    <Syslog name="SyslogAppender" host="10.0.0.77" port="5140" protocol="UDP" facility="LOCAL0" connectTimeoutMillis="0">
+      <PatternLayout pattern="[%t] %msg%n"></PatternLayout>
+    </Syslog>
+  </Appenders>
+  <Loggers>
+    <Root level="INFO">
+      <AppenderRef ref="ConsoleAppender"></AppenderRef>
+      <AppenderRef ref="SyslogAppender"></AppenderRef>
+    </Root>
+    <!-- <Logger name="of" level="INFO" additivity="false"> -->
+    <!--   <AppenderRef ref="ConsoleAppender"></AppenderRef> -->
+    <!--   <AppenderRef ref="SyslogAppender"></AppenderRef> -->
+    <!-- </Logger> -->
+  </Loggers>
+</Configuration>

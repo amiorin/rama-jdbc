@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+  <Appenders>
+    <Console name="ConsoleAppender" target="SYSTEM_OUT">
+      <PatternLayout pattern="[%t] %-5level %logger{36} - %msg%n"></PatternLayout>
+    </Console>
+    <Syslog name="SyslogAppender" host="10.0.0.77" port="5140" protocol="UDP" facility="LOCAL0" connectTimeoutMillis="0">
+      <PatternLayout pattern="[%t] %msg%n"></PatternLayout>
+    </Syslog>
+  </Appenders>
+  <Loggers>
+    <Root level="WARN">
+      <AppenderRef ref="ConsoleAppender"></AppenderRef>
+      <AppenderRef ref="SyslogAppender"></AppenderRef>
+    </Root>
+    <Logger name="org.apache.zookeeper.server.ServerCnxnFactory" level="ERROR" additivity="false">
+      <AppenderRef ref="ConsoleAppender"></AppenderRef>
+      <AppenderRef ref="SyslogAppender"></AppenderRef>
+    </Logger>
+    <Logger name="rpl.rama.distributed.daemon.worker" level="ERROR" additivity="false">
+      <AppenderRef ref="ConsoleAppender"></AppenderRef>
+      <AppenderRef ref="SyslogAppender"></AppenderRef>
+    </Logger>
+  </Loggers>
+</Configuration>

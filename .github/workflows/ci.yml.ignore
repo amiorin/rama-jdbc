@@ -1,0 +1,36 @@
+name: rama-jdbc CI
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: write
+  actions: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: download big-container
+        run: docker pull ghcr.io/amiorin/big-container:latest
+      - name: runs rama-jdbc tests
+        id: run_tests
+        run: >-
+          docker run
+          --rm
+          -u vscode
+          -e GH_TOKEN=$GH_TOKEN
+          -v /home/vscode/.m2:/home/vscode/.m2
+          -v /tmp:/tmp
+          -v /run/docker.sock:/var/run/docker.sock
+          ghcr.io/amiorin/rama-jdbc:latest
+          fish -c 'gh repo clone amiorin/rama-jdbc -- --branch main --single-branch --depth=1
+          && cd naughty-thinkable
+          && bb build
+          && direnv allow
+          && direnv exec . clj -M:shared:test'
