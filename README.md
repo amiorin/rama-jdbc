@@ -4,3 +4,10 @@
 
 ## YouTube demo
 [![Watch the video](https://img.youtube.com/vi/uMkd6YxrmIA/hqdefault.jpg)](https://www.youtube.com/watch?v=uMkd6YxrmIA)
+
+## CI
+There is parity between dev and CI. The same container is used for development and for CI. To reproduce an error in CI, you can extract the docker command used in CI and run it in development.
+
+``` sh
+cat .github/workflows/ci.yml | jet -i yaml -o json | jq -r .jobs.ci.steps[1].run | bash -s
+```

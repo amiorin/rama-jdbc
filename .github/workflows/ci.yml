@@ -25,12 +25,9 @@ jobs:
           --rm
           -u vscode
           -e GH_TOKEN=$GH_TOKEN
-          -v /home/vscode/.m2:/home/vscode/.m2
-          -v /tmp:/tmp
-          -v /run/docker.sock:/var/run/docker.sock
-          ghcr.io/amiorin/rama-jdbc:latest
+          ghcr.io/amiorin/big-container:latest
           fish -c 'gh repo clone amiorin/rama-jdbc -- --branch main --single-branch --depth=1
-          && cd naughty-thinkable
+          && cd rama-jdbc
           && bb build
           && direnv allow
-          && direnv exec . clj -M:shared:test'
+          && direnv exec . clojure -M:shared:test'
