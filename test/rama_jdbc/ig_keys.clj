@@ -32,10 +32,10 @@
         _ (fs/delete-if-exists ready-file)
         postgres (process {:continue true
                            :err (log :err)
-                           :out (log :out)} "bin/postgres.sh" port)]
+                           :out (log :out)} "direnv exec . bin/postgres.sh" port)]
     (wait-for-path ready-file {:timeout 5000})
     (shell {:err (log :err)
-            :out (log :out)} (format "sql-migrate up -env=%s -config=migrations/dbconfig.yml" (name env)))
+            :out (log :out)} (format "direnv exec . sql-migrate up -env=%s -config=migrations/dbconfig.yml" (name env)))
     {:postgres postgres
      :jdbc-url jdbc-url}))
 
