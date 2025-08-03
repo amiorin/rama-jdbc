@@ -10,10 +10,10 @@ start-duckdb:
     direnv exec . duckdb -init bin/init.sql
 
 sql-migrate-dev:
-    direnv exec . sql-migrate up -env=dev -config=0_db_migrations/dbconfig.yml
+    direnv exec . sql-migrate up -env=dev -config=migrations/dbconfig.yml
 
 sql-migrate-test:
-    direnv exec . sql-migrate up -env=test -config=0_db_migrations/dbconfig.yml
+    direnv exec . sql-migrate up -env=test -config=migrations/dbconfig.yml
 
 psql-dev:
     direnv exec . psql -h localhost -p {{postgres-port}} -U {{postgres-user}} {{postgres-dbname}}
