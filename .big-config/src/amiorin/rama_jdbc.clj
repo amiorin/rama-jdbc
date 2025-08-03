@@ -141,5 +141,5 @@
          run-steps (step/->run-steps build-fn)]
      (run-steps step-fns opts))))
 
-(comment)
-(run-steps "build -- setup prod")
+(comment
+  (run-steps "build -- setup prod"))
