@@ -96,8 +96,8 @@
   [edn data])
 
 (defn opts->dir
-  [_]
-  "..")
+  [opts]
+  (or (::bc/target-dir opts) (throw (ex-info ":big-config/target-dir is missing from opts" {:opts opts}))))
 
 (defn build-fn [{:keys [::module ::profile] :as opts}]
   (binding [*out* (java.io.StringWriter.)]
@@ -120,8 +120,6 @@
                ::run/shell-opts {:dir (opts->dir opts)}}))
 
 (defn run-steps
-  ([s]
-   (run-steps s nil))
   ([s opts]
    (run-steps s [step/print-step-fn
                  (step-fns/->exit-step-fn ::step/end)
@@ -132,7 +130,7 @@
    (let [opts (-> "amiorin/rama_jdbc/config.edn"
                   io/resource
                   aero/read-config
-                  (merge (or opts {::bc/env :repl})
+                  (merge (or opts {})
                          {::step/steps steps
                           ::run/cmds cmds
                           ::module module
@@ -142,4 +140,6 @@
      (run-steps step-fns opts))))
 
 (comment
-  (run-steps "build -- setup prod"))
+  (run-steps "build -- setup prod"
+             {::bc/env :repl
+              ::bc/target-dir ".."}))
