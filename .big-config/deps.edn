@@ -1,6 +1,6 @@
 {:paths   ["src" "resources"]
  :deps    {org.clojure/clojure              {:mvn/version "1.12.0"}
-           io.github.amiorin/big-config     {:git/sha "64b4e30279db0fa3d0a05c1be33a6b1fbd849c30"}
+           io.github.amiorin/big-config     {:git/sha "cde12620ec604fed59823fa7933c2011246449ec"}
            io.github.seancorfield/deps-new  {:git/sha "558f790c843c31cfeaeda2bf59241c8d16ad02ef"}
            com.cognitect.aws/endpoints      {:mvn/version "1.1.12.504"}
            com.cognitect.aws/secretsmanager {:mvn/version "871.2.29.35"}

@@ -8,6 +8,7 @@
    [big-config.run :as run]
    [big-config.step :as step]
    [big-config.step-fns :as step-fns]
+   [big-config.utils :refer [invoke port-assigner secrets->map]]
    [cheshire.core :as json]
    [clojure.java.io :as io]
    [clojure.string :as str]
@@ -18,22 +19,12 @@
   (:import
    [java.net URL]))
 
-(defn invoke [client operation request]
-  (let [response (aws/invoke client {:op operation :request request})]
-    (if (contains? response :cognitect.anomalies/category)
-      (throw (ex-info "AWS operation failed" {:operation operation :request request :response response}))
-      response)))
-
 (defn ->jdbc-url-staging
   []
-  (let [client (aws/client {:api :secretsmanager
-                            :region "eu-west-1"
-                            :credentials-provider (profile-credentials-provider "fixme-an-aws-profile")})]
-    (-> (invoke client :GetSecretValue {:SecretId "fixme-provide-a-secret-id"
-                                        :Query :SecretString})
-        :SecretString
-        (json/decode true)
-        :JDBC_URL)))
+  (-> (secrets->map :credentials-provider (profile-credentials-provider "fixme-an-aws-profile")
+                    :region "eu-west-1"
+                    :secret-id "fixme-provide-a-secret-id")
+      :JDBC_URL))
 
 (defn parse-jdbc-url [url-string]
   (let [url (URL. url-string)
@@ -54,14 +45,6 @@
   (some-> url
           (str/replace #".*://" "https://")
           parse-jdbc-url))
-
-(defn port-assigner [service]
-  (-> (fs/cwd)
-      (str service)
-      hash
-      abs
-      (mod 64000)
-      (+ 1024)))
 
 (defn data-fn
   [data]
