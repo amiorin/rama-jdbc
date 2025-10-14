@@ -13,8 +13,6 @@ permissions:
 jobs:
   ci:
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: download big-container
         run: docker pull ghcr.io/amiorin/big-container:latest
@@ -24,9 +22,8 @@ jobs:
           docker run
           --rm
           -u vscode
-          -e GH_TOKEN=$GH_TOKEN
           ghcr.io/amiorin/big-container:latest
-          fish -c 'gh repo clone amiorin/rama-jdbc -- --branch main --single-branch --depth=1
+          fish -c 'git clone https://github.com/amiorin/rama-jdbc.git --branch main --single-branch --depth=1
           && cd rama-jdbc
           && bb build
           && direnv allow

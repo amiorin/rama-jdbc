@@ -4,12 +4,17 @@
 /.big-config/.nrepl-port
 /.clj-kondo/
 /.cpcache/
+/.devenv.flake.nix
+/.devenv/
 /.envrc
+/.envrc.private
 /.lsp/
 /.nrepl-port
 /bin/init.sql
 /bin/postgres.sh
 /bin/shell.nix
+/devenv.nix
+/devenv.yaml
 /justfile
 /migrations/dbconfig.yml
 /shell.nix

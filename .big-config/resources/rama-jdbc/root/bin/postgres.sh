@@ -9,9 +9,9 @@ PG_DATA_DIR=$(mktemp -d -t pg_data_XXXXX)
 # Choose a port that is unlikely to be in use.
 PG_PORT=${1:-5432}
 # Define the PostgreSQL user for your Clj application.
-PG_USER={{postgres-user}}
+PG_USER=<{ postgres-user }>
 # Define the PostgreSQL database name for your Clj application.
-PG_DB={{postgres-dbname}}
+PG_DB=<{ postgres-dbname }>
 # Path to the PostgreSQL executable. Adjust if 'postgres' is not in your PATH.
 # Example: PG_BIN="/usr/local/pgsql/bin/postgres"
 PG_BIN="postgres"
