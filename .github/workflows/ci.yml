@@ -14,6 +14,16 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
       - name: download big-container
         run: docker pull ghcr.io/amiorin/big-container:latest
       - name: runs rama-jdbc tests
@@ -25,7 +35,6 @@ jobs:
           ghcr.io/amiorin/big-container:latest
           fish -c 'git clone https://github.com/amiorin/rama-jdbc.git --branch main --single-branch --depth=1
           && cd rama-jdbc
-          && nix profile add nixpkgs#devenv
           && bb build
           && direnv allow
           && direnv exec . clojure -M:shared:test'
