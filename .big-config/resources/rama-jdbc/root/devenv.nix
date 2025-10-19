@@ -3,6 +3,7 @@
 {
   packages = [
     pkgs.git
+    pkgs.process-compose
     pkgs.babashka
     pkgs.python3
     pkgs.postgresql_16

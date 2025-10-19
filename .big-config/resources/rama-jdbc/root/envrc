@@ -11,5 +11,7 @@ export JDBC_URL_DEV="jdbc:postgresql://localhost:<{ postgres-port }>/<{ postgres
 export JDBC_URL_TEST="jdbc:postgresql://localhost:<{ postgres-port-test }>/<{ postgres-dbname }>?user=<{ postgres-user }>&sslmode=disable"
 export PG_PORT_DEV=<{ postgres-port }>
 export PG_PORT_TEST=<{ postgres-port-test }>
+export PC_PORT_DEV=<{ pc-port }>
+export PC_PORT_TEST=<{ pc-port-test }>
 
 source_env_if_exists .envrc.private

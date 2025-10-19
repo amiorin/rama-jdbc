@@ -14,7 +14,7 @@
 
 (prep-with-profile! :dev)
 
-(repl/set-refresh-dirs "src")
+(repl/set-refresh-dirs "src" "test")
 
 (defn start! []
   ;;please commit only (go)

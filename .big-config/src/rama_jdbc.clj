@@ -101,6 +101,8 @@
     (-> data
         (assoc :project-root project-root)
         (assoc :duckdb-port (port-assigner "duckdb"))
+        (assoc :pc-port (port-assigner "pc"))
+        (assoc :pc-port-test (port-assigner "pc-test"))
         (assoc :postgres-port (port-assigner "postgres"))
         (assoc :postgres-port-test (port-assigner "postgres-test"))
         (assoc :postgres-home postgres-home)

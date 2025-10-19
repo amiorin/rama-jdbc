@@ -24,12 +24,12 @@ psql-test:
 psql-staging:
     direnv exec . env PGPASSWORD=<{ postgres-password-staging }> psql -h <{ postgres-host-staging }> -p <{ postgres-port-staging }> -U <{ postgres-user-staging }> <{ postgres-dbname-staging }>
 
-kill-dev:
-    lsof -t -i :<{ postgres-port }> | xargs -r kill
-    rm -f /tmp/port-<{ postgres-port }>
+# manage process-compose in dev
+[positional-arguments]
+@pc-dev *args='-f pc-dev.yaml up':
+    process-compose -p <{ pc-port }> $@
 
-kill-test:
-    lsof -t -i :<{ postgres-port-test }> | xargs -r kill
-    rm -f /tmp/port-<{ postgres-port-test }>
-
-kill-all: kill-dev kill-test
+# manage process-compose in test
+[positional-arguments]
+@pc-test *args='-f pc-test.yaml up':
+    process-compose -p <{ pc-port-test }> $@

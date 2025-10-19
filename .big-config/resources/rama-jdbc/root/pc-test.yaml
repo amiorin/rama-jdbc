@@ -1,0 +1,30 @@
+is_tui_disabled: true
+disable_env_expansion: true
+
+environment:
+  - "PG_PORT=<{ postgres-port-test }>"
+  - "PG_USER=<{ postgres-user }>"
+  - "PG_DB=<{ postgres-dbname }>"
+  - "PG_DATA_DIR=.postgres/test"
+  - "ENV=test"
+
+processes:
+  initdb:
+    command: >-
+      rm -rf $PG_DATA_DIR
+      && initdb $PG_DATA_DIR
+  postgres:
+    command: postgres -c log_statement=all -D $PG_DATA_DIR -p $PG_PORT
+    depends_on:
+      initdb:
+        condition: process_completed_successfully
+    ready_log_line: "database system is ready to accept connections"
+  post:
+    command: >-
+      createuser -h localhost -p "$PG_PORT" -U "$USER" --no-password "$PG_USER"
+      && createdb -h localhost -p "$PG_PORT" -U "$USER" -O "$PG_USER" "$PG_DB"
+      && sql-migrate up -env="$ENV" -config=migrations/dbconfig.yml
+      && touch "/tmp/port-$PG_PORT"
+    depends_on:
+      postgres:
+        condition: process_log_ready

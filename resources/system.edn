@@ -5,7 +5,9 @@
  :postgres/server
  #profile {:dev {:jdbc-url #env JDBC_URL_DEV
                  :port #long #env PG_PORT_DEV
+                 :pc-port #long #env PC_PORT_DEV
                  :env #ig/ref :system/env}
            :test {:jdbc-url #env JDBC_URL_TEST
                   :port #long #env PG_PORT_TEST
+                  :pc-port #long #env PC_PORT_TEST
                   :env #ig/ref :system/env}}}

@@ -1,7 +1,7 @@
 (ns rama-jdbc.ig-keys
   (:require
    [babashka.fs :as fs]
-   [babashka.process :refer [process shell]]
+   [babashka.process :refer [destroy process shell]]
    [babashka.wait :refer [wait-for-path]]
    [clojure.string :as str]
    [clojure.tools.logging :as log]
@@ -27,24 +27,19 @@
   (format "/tmp/port-%s" port))
 
 (defmethod ig/init-key :postgres/server
-  [_ {:keys [jdbc-url port env]}]
+  [_ {:keys [jdbc-url port pc-port env]}]
   (let [ready-file (->ready-file port)
         _ (fs/delete-if-exists ready-file)
-        postgres (process {:continue true
-                           :err (log :err)
-                           :out (log :out)} "direnv exec . bin/postgres.sh" port)]
+        cmd (format "direnv exec . process-compose -f pc-%s.yaml -p %s up" (name env) pc-port)
+        pc (process {:err (log :err)
+                     :out (log :out)} cmd)]
     (wait-for-path ready-file {:timeout 5000})
-    (shell {:err (log :err)
-            :out (log :out)} (format "direnv exec . sql-migrate up -env=%s -config=migrations/dbconfig.yml" (name env)))
-    {:postgres postgres
+    {:pc pc
      :jdbc-url jdbc-url}))
 
 (defmethod ig/halt-key! :postgres/server
-  [_ {:keys [postgres]}]
-  (let [pid (-> postgres :proc .pid)]
-    (shell {:continue true
-            :err (log :err)
-            :out (log :out)} (format "kill -INT %s" pid))))
+  [_ {:keys [pc]}]
+  (destroy pc))
 
 (comment
   (let [port "61865"
