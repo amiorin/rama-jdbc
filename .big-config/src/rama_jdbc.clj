@@ -21,7 +21,8 @@
                   :overwrite true
                   :data-fn 'rama-jdbc/data-fn
                   :transform [["root" ""
-                               {"envrc" ".envrc"}
+                               {"envrc" ".envrc"
+                                "projectile" ".projectile"}
                                {:tag-open \<
                                 :tag-close \>}]]}
         templates (for [[table-name primary-key-type] [["users" "UUID"] ["posts" "UUID"]]]
