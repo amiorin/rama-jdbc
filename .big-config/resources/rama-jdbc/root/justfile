@@ -27,9 +27,9 @@ psql-staging:
 # manage process-compose in dev
 [positional-arguments]
 @pc-dev *args='-f pc-dev.yaml up':
-    process-compose -p <{ pc-port }> $@
+    direnv exec . process-compose -p <{ pc-port }> $@
 
 # manage process-compose in test
 [positional-arguments]
 @pc-test *args='-f pc-test.yaml up':
-    process-compose -p <{ pc-port-test }> $@
+    direnv exec . process-compose -p <{ pc-port-test }> $@

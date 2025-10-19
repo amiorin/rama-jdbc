@@ -40,15 +40,3 @@
 (defmethod ig/halt-key! :postgres/server
   [_ {:keys [pc]}]
   (destroy pc))
-
-(comment
-  (let [port "61865"
-        _ (fs/delete-if-exists (->ready-file port))
-        cmd (format "bin/postgres.sh %s" port)
-        postgres (process {:err (log :err)
-                           :out (log :out)} cmd)
-        pid (-> postgres :proc .pid)]
-    (wait-for-path (format "/tmp/port-%s" port) {:timeout 5000})
-    (shell {:continue true
-            :err (log :err)
-            :out (log :out)} (format "kill -INT %s" pid))))
