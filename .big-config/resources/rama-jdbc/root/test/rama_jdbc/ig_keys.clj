@@ -1,7 +1,7 @@
 (ns rama-jdbc.ig-keys
   (:require
    [babashka.fs :as fs]
-   [babashka.process :refer [destroy process shell]]
+   [babashka.process :refer [destroy process]]
    [babashka.wait :refer [wait-for-path]]
    [clojure.string :as str]
    [clojure.tools.logging :as log]
