@@ -39,7 +39,6 @@
                     {::run/shell-opts {:dir dir
                                        :extra-env {"AWS_PROFILE" "default"}}
                      ::render/templates templates})]
-    #_opts
     (if step-fns
       (apply step/run-steps s opts step-fns)
       (step/run-steps s opts))))
