@@ -13,8 +13,6 @@
 /bin/init.sql
 /bin/postgres.sh
 /bin/shell.nix
-/devenv.nix
-/devenv.yaml
 /justfile
 /migrations/dbconfig.yml
 /shell.nix
