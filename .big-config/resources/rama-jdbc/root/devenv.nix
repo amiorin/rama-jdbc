@@ -3,6 +3,7 @@
 {
   packages = [
     pkgs.git
+    pkgs.jet
     pkgs.process-compose
     pkgs.babashka
     pkgs.python3
