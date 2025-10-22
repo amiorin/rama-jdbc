@@ -25,7 +25,7 @@
                                 "projectile" ".projectile"}
                                {:tag-open \<
                                 :tag-close \>}]]}
-        templates (for [[table-name primary-key-type] [["users" "UUID"] ["posts" "UUID"]]]
+        templates (for [[table-name primary-key-type] [["users" "UUID"] ["posts" "BIGSERIAL"]]]
                     (-> template
                         (merge {:table-name table-name
                                 :primary-key-type primary-key-type})

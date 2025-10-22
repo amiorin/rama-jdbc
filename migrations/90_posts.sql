@@ -1,8 +1,8 @@
 -- +migrate Up
 CREATE TABLE IF NOT EXISTS posts_records (
     offset_id BIGSERIAL PRIMARY KEY,
-    new_id UUID,
-    old_id UUID,
+    new_id BIGSERIAL,
+    old_id BIGSERIAL,
     operation_type VARCHAR(1) NOT NULL, -- 'I', 'U', 'D'
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
