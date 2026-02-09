@@ -7,7 +7,9 @@
         org.postgresql/postgresql              {:mvn/version "42.7.7"}
         com.layerware/hugsql                   {:mvn/version "0.5.3"}
         com.layerware/hugsql-adapter-next-jdbc {:mvn/version "0.5.3"}
-        com.rpl/specter                        {:mvn/version "1.1.6"}}
+        com.rpl/specter                        {:mvn/version "1.1.6"}
+        io.github.amiorin/big-config           {:git/sha "5656da2a16f1e475ef59aecd29bf0f27f2b52d85"}
+        babashka/process                       {:mvn/version "0.6.25"}}
  :mvn/repos {"releases" {:url "https://nexus.redplanetlabs.com/repository/maven-public-releases"}}
  :aliases {:shared {:extra-deps {com.rpl/rama                                {:mvn/version "1.2.0"}
                                  org.slf4j/slf4j-api                         {:mvn/version "2.0.17"}
@@ -25,7 +27,8 @@
                                  cheshire/cheshire                           {:mvn/version "6.1.0"}
                                  org.clojure/tools.logging                   {:mvn/version "1.3.0"}}}
            :dev {:extra-deps {org.clojure/tools.namespace {:mvn/version "1.5.0"}}
-                 :extra-paths ["env/dev/clj" "env/dev/resources" "test"]}
+                 :extra-paths ["env/dev/clj" "env/dev/resources" "test"]
+                 :jvm-opts ["-Djdk.attach.allowAttachSelf=true"]}
            :build {:deps {io.github.clojure/tools.build {:git/tag "v0.10.9"
                                                          :git/sha "e405aac"}
                           slipset/deps-deploy {:mvn/version "0.2.2"}}
