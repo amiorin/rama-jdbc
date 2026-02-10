@@ -5,6 +5,7 @@
    [big-config.core :refer [->workflow ok]]
    [big-config.run :as run]
    [big-config.step-fns :refer [log-step-fn]]
+   [clojure.core.async :as a]
    [clojure.java.io :as io]
    [clojure.string :as str]))
 
@@ -22,27 +23,9 @@
 (def env (read-system-env))
 
 (defn destroy-forcibly [proc]
-  (.destroyForcibly ^java.lang.Process (:proc proc))
+  (when (p/alive? proc)
+    (.destroyForcibly ^java.lang.Process (:proc proc)))
   proc)
-
-(defn start-and-grep [cmd regex]
-  (let [proc (p/process {:err :out} cmd) ;; Redirect stderr to see errors
-        reader (io/reader (:out proc))]
-    (try
-      (loop []
-        (if-let [line (.readLine reader)]
-          (do
-            (binding [*out* *err*]
-              (println line)
-              (.flush *err*))
-            (if (re-find regex line)
-              [proc line]
-              (do (Thread/sleep 100)
-                  (recur))))
-          (throw (Exception. "Stream closed before regex was found"))))
-      (catch Exception e
-        (destroy-forcibly proc) ;; Clean up if things go south
-        (throw e)))))
 
 (defn prepare [{:keys [::profile] :as opts}]
   (let [profile-name (name profile)
@@ -67,10 +50,50 @@
     (.flush *err*)
     opts))
 
+(defn re-stream [stream regex & {:keys [timeout]}]
+  (let [signal-chan (a/chan (a/dropping-buffer 1))
+        ms (or timeout 1000)]
+    (a/thread
+      (with-open [reader (io/reader stream)]
+        (doseq [line (line-seq reader)]
+          (binding [*out* *err*]
+            (println line)
+            (.flush *err*))
+          (when (re-find regex line)
+            (a/>!! signal-chan line)))))
+    (let [[val port] (a/alts!! [signal-chan (a/timeout ms)])]
+      (if (= port signal-chan)
+        val
+        :timeout))))
+
+(defn re-program [cmd regex key opts]
+  (let [proc (p/process {:err :out} cmd)
+        stream (:out proc)]
+    (case (re-stream stream regex {:timeout 500})
+      :timeout (if (p/alive? proc)
+                 (merge opts {key @(p/destroy-tree proc)
+                              ::bc/exit 1
+                              ::bc/err (format "regex `%s` not found in `%s`" regex cmd)})
+                 (merge opts {key @proc
+                              ::bc/exit 1
+                              ::bc/err (format "`%s` exit with code `%s` before the timeout" cmd (:exit @proc))}))
+      (merge opts {key proc
+                   ::bc/exit 0
+                   ::bc/err nil}))))
+
+(comment
+  (let [cmd #_"bash -c 'exit 1'" "bash -c 'for i in {10..1}; do echo $i; sleep 0.1; done;'"
+        regex #"7"]
+    (re-program cmd regex ::pg-proc {})))
+
 (defn start-postgres [{:keys [::pg-data-dir ::pg-port] :as opts}]
   (let [cmd (format "postgres -c log_statement=all -D %s -p %s" pg-data-dir pg-port)
-        [proc _] (start-and-grep cmd #".*database system is ready to accept connections.*")]
-    (merge opts (ok) {::pg-proc proc})))
+        regex #".*database system is ready to accept connections.*"]
+    (re-program cmd regex ::pg-proc opts)))
+
+(comment
+  (start-postgres {::pg-data-dir "/asdfasdfasdfasd"
+                   ::pg-port 4321}))
 
 (defn configure-postgres [step-fns {:keys [::pg-port ::pg-user ::pg-db ::user ::env] :as opts}]
   (let [opts (->> (merge opts {::run/shell-opts {:err *err*
@@ -85,7 +108,8 @@
 (defn stop [{:keys [::pg-proc ::pg-data-dir ::async] :as opts}]
   (let [clean-up (fn [opts]
                    (when pg-proc
-                     (destroy-forcibly pg-proc))
+                     @(p/destroy-tree pg-proc)
+                     @(destroy-forcibly pg-proc))
                    (run/generic-cmd :opts opts :cmd (format "rm -rf %s" pg-data-dir))
                    opts)]
     (if async
