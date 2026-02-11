@@ -1,9 +1,12 @@
 (ns user
   (:require
+   [big-config :as bc]
+   [big-config.system :as system]
    [clojure.tools.namespace.repl :as repl] ;; benchmarking
    [integrant.core :as ig]
    [integrant.repl :refer [go halt reset]]
    [integrant.repl.state :as state]
+   [rama-jdbc.components :as components]
    [rama-jdbc.ig-keys]
    [rama-jdbc.test-utils :refer [system-config]]))
 
@@ -38,3 +41,25 @@
 (comment
   (reset! debug-atom [])
   (-> @debug-atom))
+
+(defonce system (atom nil))
+
+(defn with-system [f]
+  (when @system
+    (system/stop! @system))
+  (reset! system (components/->system {::bc/env :repl
+                                       ::components/profile :test
+                                       ::system/async true}))
+  (f))
+
+(comment
+  (-> system
+      deref
+      (->> (into (sorted-map))))
+  (do
+    (reset! debug-atom [])
+    (let [f (fn []
+              (let [{:keys [::components/profile]} @system]
+                (tap> profile)))]
+      (with-system f))
+    (-> @debug-atom)))

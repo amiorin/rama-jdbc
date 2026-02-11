@@ -1,4 +1,4 @@
-(ns rama-jdbc.systems
+(ns rama-jdbc.components
   (:require
    [babashka.process :as p]
    [big-config :as bc]

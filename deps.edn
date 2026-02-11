@@ -8,8 +8,8 @@
         com.layerware/hugsql                   {:mvn/version "0.5.3"}
         com.layerware/hugsql-adapter-next-jdbc {:mvn/version "0.5.3"}
         com.rpl/specter                        {:mvn/version "1.1.6"}
-        #_#_io.github.amiorin/big-config           {:git/sha "5656da2a16f1e475ef59aecd29bf0f27f2b52d85"}
-        io.github.amiorin/big-config           {:local/root "../../big-config/main"}
+        io.github.amiorin/big-config           {:git/sha "48e99c2cb4ab86cdf81df344178017862cb34d52"}
+        #_#_io.github.amiorin/big-config           {:local/root "../../big-config/main"}
         babashka/process                       {:mvn/version "0.6.25"}}
  :mvn/repos {"releases" {:url "https://nexus.redplanetlabs.com/repository/maven-public-releases"}}
  :aliases {:shared {:extra-deps {com.rpl/rama                                {:mvn/version "1.2.0"}

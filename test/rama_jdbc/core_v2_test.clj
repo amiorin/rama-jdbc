@@ -1,8 +1,9 @@
 (ns rama-jdbc.core-v2-test
   (:require
    [big-config :as bc]
+   [big-config.system :as system]
    [clojure.pprint :as pp]
-   [clojure.test :refer [deftest is testing use-fixtures]] ;; [com.rpl.rama :refer :all]
+   [clojure.test :refer [deftest is testing use-fixtures]]
    [com.rpl.rama :refer :all]
    [com.rpl.rama.path :refer :all]
    [com.rpl.rama.test :as rtest]
@@ -12,41 +13,41 @@
    [next.jdbc :as jdbc]
    [next.jdbc.connection :as connection]
    [next.jdbc.result-set :as result-set]
+   [rama-jdbc.components :as components]
    [rama-jdbc.core :refer [->dispatcher ->jdbc-depot do-get-records
                            get-max-offset-id get-min-offset-id]]
-   [rama-jdbc.system :as system]
    [rama-jdbc.test-utils :refer [clj->pg]])
   (:import
    [com.zaxxer.hikari HikariDataSource]
    [java.util.concurrent ExecutionException]))
 
-(defonce system-state (atom nil))
+(defonce system (atom nil))
 
-(defn with-system-state [f]
-  (when @system-state
-    (system/stop! @system-state))
-  (reset! system-state (system/state {::bc/env :repl
-                                      ::system/profile :test
-                                      ::system/async true}))
+(defn with-system [f]
+  (when @system
+    (system/stop! @system))
+  (reset! system (components/->system {::bc/env :repl
+                                       ::components/profile :test
+                                       ::system/async true}))
   (f)
   #_(system/stop! @system-state)
   #_(reset! system-state nil))
 
 (comment
-  (-> system-state
+  (-> system
       deref
       (->> (into (sorted-map))))
   (do
     (require '[user :as u])
     (reset! u/debug-atom [])
     (let [f (fn []
-              (let [{:keys [::system/profile]} @system-state]
+              (let [{:keys [::components/profile]} @system]
                 (tap> profile)))]
-      (with-system-state f))
+      (with-system f))
     (-> @u/debug-atom)))
 
-(when (nil? @system-state)
-  (use-fixtures :each with-system-state))
+(when (nil? @system)
+  (use-fixtures :each with-system))
 
 (h/set-adapter! (next-adapter/hugsql-adapter-next-jdbc {:builder-fn result-set/as-unqualified-maps}))
 
@@ -54,7 +55,7 @@
 
 (deftest smoke-test-integrant
   (testing "loading of the system"
-    (is (#{:test :dev} (::system/profile @system-state)))))
+    (is (#{:test :dev} (::system/profile @system)))))
 
 (defn fixtures [jdbc-url start end]
   (let [datasource-options {:jdbcUrl jdbc-url
@@ -72,7 +73,7 @@
 
 (deftest smoke-test-rama
   (testing "loading of the rama module"
-    (let [jdbc-url (::system/jdbc-url @system-state)
+    (let [jdbc-url (::system/jdbc-url @system)
           _ (fixtures jdbc-url 1 2)
           datasource-options {:jdbcUrl jdbc-url
                               :maximumPoolSize 10
@@ -102,7 +103,7 @@
 
 (comment
   (let [f (fn []
-            (let [jdbc-url (::system/jdbc-url @system-state)
+            (let [jdbc-url (::system/jdbc-url @system)
                   _ (fixtures jdbc-url 1 2)
                   datasource-options {:jdbcUrl jdbc-url
                                       :maximumPoolSize 10
@@ -128,8 +129,8 @@
                 (rtest/launch-module! ipc module {:tasks 4 :threads 2})
                 (Thread/sleep 10000)
                 (rtest/destroy-module! ipc (get-module-name module)))))]
-    (with-system-state f)
-    (-> system-state
+    (with-system f)
+    (-> system
         deref
         (->> (into (sorted-map))))))
 
@@ -158,7 +159,7 @@
              [1 1 1 0 0]
              [1 1 101 100 100]
              #_[1 1 200 100 100]]]
-      (let [jdbc-url (::system/jdbc-url @system-state)
+      (let [jdbc-url (::system/jdbc-url @system)
             datasource-options {:jdbcUrl jdbc-url
                                 :maximumPoolSize 10
                                 :minimumIdle 1
@@ -195,7 +196,7 @@
                      #_[1 1 1 0 0]
                      #_[1 1 101 100 100]
                      [1 1 200 100 100]]]
-              (let [jdbc-url (::system/jdbc-url @system-state)
+              (let [jdbc-url (::system/jdbc-url @system)
                     datasource-options {:jdbcUrl jdbc-url
                                         :maximumPoolSize 10
                                         :minimumIdle 1
@@ -219,9 +220,9 @@
                     cnt-2 (count records)]
                 (tap> [cnt-1 cnt-2]))))]
     (tap> "start")
-    (with-system-state f)
+    (with-system f)
     (tap> "end")
-    (-> system-state
+    (-> system
         deref
         (->> (into (sorted-map))))))
 
@@ -230,7 +231,7 @@
     (let [_ (h/set-adapter! (next-adapter/hugsql-adapter-next-jdbc {:builder-fn result-set/as-unqualified-maps}))
           m (h/map-of-db-fns "sql/queries.sql")
           dispatcher (->dispatcher m)
-          jdbc-url (::system/jdbc-url @system-state)
+          jdbc-url (::system/jdbc-url @system)
           datasource-options {:jdbcUrl jdbc-url
                               :maximumPoolSize 10
                               :minimumIdle 1
@@ -331,7 +332,7 @@
 (comment
   (let [_ (h/set-adapter! (next-adapter/hugsql-adapter-next-jdbc {:builder-fn result-set/as-unqualified-maps}))
         m (h/map-of-db-fns "sql/queries.sql")
-        jdbc-url (::system/jdbc-url @system-state)
+        jdbc-url (::system/jdbc-url @system)
         datasource-options {:jdbcUrl jdbc-url
                             :maximumPoolSize 10
                             :minimumIdle 1
@@ -378,7 +379,7 @@
 (comment
   (let [_ (h/set-adapter! (next-adapter/hugsql-adapter-next-jdbc {:builder-fn result-set/as-unqualified-maps}))
         m (h/map-of-db-fns "sql/queries.sql")
-        jdbc-url (::system/jdbc-url @system-state)
+        jdbc-url (::system/jdbc-url @system)
         datasource-options {:jdbcUrl jdbc-url
                             :maximumPoolSize 10
                             :minimumIdle 1
