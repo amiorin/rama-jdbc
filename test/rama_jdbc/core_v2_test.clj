@@ -46,8 +46,7 @@
       (with-system f))
     (-> @u/debug-atom)))
 
-(when (nil? @system)
-  (use-fixtures :each with-system))
+(use-fixtures :each with-system)
 
 (h/set-adapter! (next-adapter/hugsql-adapter-next-jdbc {:builder-fn result-set/as-unqualified-maps}))
 
